@@ -1,6 +1,7 @@
 import { asyncCatch, AppError } from "../utils";
 import { verifyToken } from "../utils/authToken";
 import { database } from "../database";
+import { token } from "morgan";
 
 export const protect = asyncCatch(async (req, res, next) => {
   // Get 'authorization' header from request headers.
@@ -20,7 +21,7 @@ export const protect = asyncCatch(async (req, res, next) => {
     accessToken,
     process.env.ACCESS_TOKEN_SECRET!
   );
-  if (!userId || !tokenVersion) {
+  if (typeof userId !== "number" || typeof tokenVersion !== "number") {
     throw new AppError(401, "Invalid access token.");
   }
   // Get user with id and token version.
@@ -30,6 +31,8 @@ export const protect = asyncCatch(async (req, res, next) => {
   if (!user.length) {
     throw new AppError(401, "Invalid access token.");
   }
-  req.user = user[0];
+  // Omit password from user object.
+  const { password: omit, ...rest } = user[0];
+  req.user = rest;
   next();
 });

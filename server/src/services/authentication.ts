@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 
 import { database } from "../database";
 import { AppError } from "../utils";
-import { createToken, verifyToken } from "../utils/authToken";
+import { createToken, verifyToken } from "../utils";
 
 interface registerParams {
   name: string;

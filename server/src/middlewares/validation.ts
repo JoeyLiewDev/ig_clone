@@ -4,7 +4,7 @@ import { asyncCatch } from "../utils";
 
 export const validate = (schema: ObjectSchema) =>
   asyncCatch((req, res, next) => {
-    const { error } = schema.validate(req.body);
+    const { error } = schema.validate(req.body, { abortEarly: false });
     if (error) {
       return res.status(422).json({
         error,

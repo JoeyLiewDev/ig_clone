@@ -1,2 +1,3 @@
 export * from "./errorHandler";
-export * as validation from "./validation";
+export * from "./protect";
+export * from "./validation";

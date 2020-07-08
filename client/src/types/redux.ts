@@ -7,6 +7,9 @@ import {
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
   REGISTER_FAILURE,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
 } from "../redux/authentication";
 
 interface registerRequestAction {
@@ -20,6 +23,20 @@ interface registerSuccessAction {
 
 interface registerFailureAction {
   type: typeof REGISTER_FAILURE;
+  error: any;
+}
+
+interface loginRequestAction {
+  type: typeof LOGIN_REQUEST;
+}
+
+interface loginSuccessAction {
+  type: typeof LOGIN_SUCCESS;
+  payload: User;
+}
+
+interface loginFailureAction {
+  type: typeof LOGIN_FAILURE;
   error: any;
 }
 
@@ -39,4 +56,7 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 export type authenticationActionTypes =
   | registerRequestAction
   | registerSuccessAction
-  | registerFailureAction;
+  | registerFailureAction
+  | loginRequestAction
+  | loginSuccessAction
+  | loginFailureAction;

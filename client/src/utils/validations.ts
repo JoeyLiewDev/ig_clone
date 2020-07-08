@@ -12,3 +12,11 @@ export const registerValidation = yup.object().shape({
     .required("Confirm Password is required")
     .oneOf([yup.ref("password")], "Passwords must match"),
 });
+
+export const loginValidation = yup.object().shape({
+  email: yup.string().email("E-Mail is invalid").required("E-Mail is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password requires atleast 6 characters"),
+});

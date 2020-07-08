@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers";
 
@@ -6,21 +7,20 @@ import styles from "./Register.module.scss";
 import { Input } from "../../components/Input";
 import { registerValidation } from "../../utils/validations";
 import { Button } from "../../components/Button";
-
-type FormData = {
-  email: string;
-  name: string;
-  password: string;
-  confirmPassword: string;
-};
+import { registerData } from "../../types/authentication";
+import { registerAction } from "../../redux/authentication";
 
 export const Register = () => {
-  const { register, handleSubmit, errors } = useForm<FormData>({
+  const dispatch = useDispatch();
+
+  const { register, handleSubmit, errors } = useForm<registerData>({
     resolver: yupResolver(registerValidation),
     mode: "onBlur",
   });
 
-  const onSubmit = (data: FormData) => {};
+  const onSubmit = (data: registerData) => {
+    dispatch(registerAction(data));
+  };
 
   return (
     <div className={styles.register__container}>

@@ -1,0 +1,44 @@
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: var(--black);
+  border-bottom: 1px solid var(--yellow);
+  z-index: 10;
+}
+
+.header__logo_link {
+  display: flex;
+  align-items: center;
+  font-family: "Galada", cursive;
+  font-size: 2rem;
+  text-decoration: none;
+  color: var(--yellow);
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+
+  & > :not(:last-child) {
+    margin-right: 2rem;
+  }
+}
+
+.header__nav_link {
+  color: white;
+  font-weight: 700;
+  padding: 0.5rem 0.7rem;
+  border-radius: 3px;
+  background: var(--yellow);
+  text-decoration: none;
+
+  & :hover {
+    cursor: pointer;
+  }
+}

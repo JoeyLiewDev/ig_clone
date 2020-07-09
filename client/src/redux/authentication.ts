@@ -1,10 +1,10 @@
 import { registerData, loginData } from "../types/authentication";
 import {
+  User,
   authenticationActionTypes,
-  AppThunk,
   authenticationState,
-} from "../types/redux";
-import { User } from "../types/authentication";
+} from "../types/authentication";
+import { AppThunk } from "../types";
 
 // Action Types
 export const REGISTER_REQUEST = "REGISTER_REQUEST";
@@ -13,6 +13,12 @@ export const REGISTER_FAILURE = "REGISTER_FAILURE";
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAILURE = "LOGIN_FAILURE";
+export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
+export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const LOGOUT_FAILURE = "LOGOUT_FAILURE";
+export const LOAD_SESSION_REQUEST = "LOAD_SESSION_REQUEST";
+export const LOAD_SESSION_SUCCESS = "LOAD_SESSION_SUCCESS";
+export const LOAD_SESSION_FAILURE = "LOAD_SESSION_FAILURE";
 
 // Action Creators
 const registerRequest = (): authenticationActionTypes => ({
@@ -40,6 +46,33 @@ const loginSuccess = (payload: User): authenticationActionTypes => ({
 
 const loginFailure = (error?: any): authenticationActionTypes => ({
   type: LOGIN_FAILURE,
+  error,
+});
+
+const logoutRequest = (): authenticationActionTypes => ({
+  type: LOGOUT_REQUEST,
+});
+
+const logoutSuccess = (): authenticationActionTypes => ({
+  type: LOGOUT_SUCCESS,
+});
+
+const logoutFailure = (error?: any): authenticationActionTypes => ({
+  type: LOGOUT_FAILURE,
+  error,
+});
+
+const loadSessionRequest = () => ({
+  type: LOAD_SESSION_REQUEST,
+});
+
+const loadSessionSuccess = (session: User): authenticationActionTypes => ({
+  type: LOAD_SESSION_SUCCESS,
+  payload: session,
+});
+
+const loadSessionFailure = (error?: any): authenticationActionTypes => ({
+  type: LOAD_SESSION_FAILURE,
   error,
 });
 
@@ -96,6 +129,47 @@ export const loginAction = (data: loginData): AppThunk => async (dispatch) => {
   }
 };
 
+export const loadSession = (
+  setLoading: (loading: boolean) => void
+): AppThunk => async (dispatch) => {
+  dispatch(loadSessionRequest());
+  try {
+    const accessToken = localStorage.getItem("act");
+    if (!accessToken) {
+      dispatch(loadSessionFailure("Access token is required"));
+    }
+    const response = await fetch("/api/authentication/load_session", {
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.ok) {
+      const { user } = await response.json();
+      dispatch(loadSessionSuccess(user));
+    } else {
+      dispatch(loadSessionFailure());
+    }
+    setLoading(false);
+  } catch (error) {
+    dispatch(loadSessionFailure(error));
+  }
+};
+
+export const logout = (): AppThunk => async (dispatch) => {
+  dispatch(logoutRequest());
+  try {
+    const response = await fetch("/api/authentication/logout", {
+      credentials: "include",
+    });
+    if (response.ok) {
+      dispatch(logoutSuccess());
+      localStorage.removeItem("act");
+    }
+  } catch (error) {
+    dispatch(logoutFailure(error));
+  }
+};
+
 // State of Reducer
 const initialState: authenticationState = {
   session: null,
@@ -110,12 +184,15 @@ export const authentication = (
   switch (action.type) {
     case REGISTER_REQUEST:
     case LOGIN_REQUEST:
+    case LOAD_SESSION_REQUEST:
+    case LOGOUT_REQUEST:
       return {
         ...state,
         isFetching: true,
       };
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
+    case LOAD_SESSION_SUCCESS:
       return {
         ...state,
         isFetching: false,
@@ -124,6 +201,8 @@ export const authentication = (
       };
     case REGISTER_FAILURE:
     case LOGIN_FAILURE:
+    case LOAD_SESSION_FAILURE:
+    case LOGOUT_FAILURE:
       return {
         ...state,
         isFetching: false,
